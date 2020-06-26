@@ -1,0 +1,12 @@
+var,y_lower,y_upper,name
+hs_no2_yr_hcp2_h,0,25,no2_exposure
+hs_ndvi100_h,0,25,green_space
+hs_total_sweets,0,25,sweets
+hs_beverages,0,25,fizzy_drinks
+hs_total_fruits,0,25,fruit_portions
+hs_total_veg,0,25,vegetable_portions
+hs_bakery_prod,0,25,baked_goods
+hs_mvpa_alt,0,25,physical_activity
+sed_hr,0,25,sedentary_activity
+dif_hours_wd,0,25,sleep_weekday
+dif_hours_we,0,25,sleep_weekend

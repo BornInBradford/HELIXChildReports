@@ -8,4 +8,4 @@ cfg_cohort <- "BIB"
 cfg_child_filter <- NULL
 cfg_child_filter <- c("BIB10041")
 
-
+cfg_output_path <- "/path/to/output/folder/"

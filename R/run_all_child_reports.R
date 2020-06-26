@@ -6,8 +6,9 @@ library(ggplot2)
 library(dplyr)
 
 chart_labels_file <- "R/chart_labels.csv"
+chart_settings_file <- "R/chart_settings.csv"
 cohort_country_file <-  "R/cohort_country.csv"
-cohort_lan_file <- "R/cohort_language.csv"
+cohort_language_file <- "R/cohort_language.csv"
 
 # read and filter data by cohort
 all_data <- read_csv(cfg_data_file, col_types = "ccnnnnnnnnnnn")
@@ -16,15 +17,19 @@ cohort_data <- all_data %>% filter(hs_cohort == cfg_cohort)
 # apply child filter if there is one
 if(!is.null(cfg_child_filter)) cohort_data <- cohort_data %>% filter(HelixID %in% cfg_child_filter)
 
-# read chart settings
-cohort_language <- read_csv(cohort_country_file)
-chart_labels <- read_csv(chart_labels_file) %>% filter(lan == cfg_language)
-cohort_country <- read_csv(cohort_country_file) %>% filter(lan == cfg_language)
+# read chart settings with cohort language filter
+chart_settings <- read_csv(chart_settings_file)
+cohort_language <- read_csv(cohort_language_file)
+chart_labels <- read_csv(chart_labels_file)
+cohort_country <- read_csv(cohort_country_file)
 
 # get cohort language and filter labels and country information
-output_language <- cohort_language$lan[hs_cohort == cfg_cohort]
+output_language <- cohort_language$lan[cohort_language$hs_cohort == cfg_cohort]
 chart_labels <- chart_labels %>% filter(lan == output_language)
 cohort_country <- cohort_country %>% filter(lan == output_language)
+
+# merge chart settings with language
+chart_settings <- chart_settings %>% inner_join(chart_labels)
 
 # loop through charts
 c <- 1
