@@ -5,16 +5,31 @@ library(readr)
 library(ggplot2)
 library(dplyr)
 
-all_data <- read_csv(cfg_data_file, col_types = "ccnnnnnnnnnnn")
+chart_labels_file <- "R/chart_labels.csv"
+cohort_country_file <-  "R/cohort_country.csv"
+cohort_lan_file <- "R/cohort_language.csv"
 
+# read and filter data by cohort
+all_data <- read_csv(cfg_data_file, col_types = "ccnnnnnnnnnnn")
 cohort_data <- all_data %>% filter(hs_cohort == cfg_cohort)
 
+# apply child filter if there is one
 if(!is.null(cfg_child_filter)) cohort_data <- cohort_data %>% filter(HelixID %in% cfg_child_filter)
 
-chart_labels <- read_csv(cfg_labels_file) %>% filter(lan == cfg_language)
-cohort_country <- read_csv(cfg_cohorts_file) %>% filter(lan == cfg_language)
+# read chart settings
+cohort_language <- read_csv(cohort_country_file)
+chart_labels <- read_csv(chart_labels_file) %>% filter(lan == cfg_language)
+cohort_country <- read_csv(cohort_country_file) %>% filter(lan == cfg_language)
 
+# get cohort language and filter labels and country information
+output_language <- cohort_language$lan[hs_cohort == cfg_cohort]
+chart_labels <- chart_labels %>% filter(lan == output_language)
+cohort_country <- cohort_country %>% filter(lan == output_language)
+
+# loop through charts
 c <- 1
+
+
 
 
 # make chart data

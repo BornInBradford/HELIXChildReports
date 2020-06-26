@@ -1,0 +1,11 @@
+
+
+cfg_data_file <- "/path/to/file.csv"
+
+cfg_cohort <- "BIB"
+
+# set cfg_child_filter to NULL to include all children
+cfg_child_filter <- NULL
+cfg_child_filter <- c("BIB10041")
+
+
