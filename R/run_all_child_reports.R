@@ -38,11 +38,6 @@ cohort_children <- all_data %>% filter(hs_cohort == cfg_cohort) %>% select(Helix
 # apply child filter if there is one
 if(!is.null(cfg_child_filter)) cohort_children <- cohort_children %>% filter(HelixID %in% cfg_child_filter)
 
-# loop through charts
-c <- 1
-
-
-
 
 # make chart data
 # one column for each exposure
@@ -56,22 +51,31 @@ marginal_means <- all_data_summary %>%
   mutate(country = "All")
 all_data_summary <- bind_rows(all_data_summary, marginal_means)
 
+# loop through charts and children
+for(c in 1:nrow(chart_settings)) {
+  for(h in 1:nrow(cohort_children)) {
 
-# make single plot
+    # make single plot
+    g <- ggplot(all_data_summary) + 
+      geom_bar(aes_string(x="country", y=chart_settings$var[c], fill="country"), 
+               position = "dodge", stat = "summary", show.legend = FALSE) +
+      scale_fill_manual(values=c("chartreuse4", "pink1", "pink1", "pink1", "pink1", "pink1", "pink1")) +
+      scale_y_continuous(limits = c(chart_settings$y_lower[c], chart_settings$y_upper[c])) +
+      geom_hline(aes(yintercept=pull(all_data[all_data$HelixID == cohort_children$HelixID[h], chart_settings$var[c]]), linetype = chart_settings$linetype[c]), color="red", size=1) +
+      labs(title = chart_settings$title[c], x="", y="") + 
+      theme(panel.background=element_blank(),
+            legend.title = element_blank(),
+            legend.key = element_rect(fill = NA))
+    # output png
+    ggsave(filename = paste0(cfg_output_path, cohort_children$HelixID[h], "_", chart_settings$name[c], "_barplot.png"),
+           plot = g, 
+           device = "png",
+           width=8, 
+           height=5, 
+           units=("in"), 
+           dpi=300)
 
+  }
+}
 
-# test code
-
-ggplot(dat) + 
-  geom_bar(aes(x=hs_cohort, y=hs_total_fruits, fill=hs_cohort), 
-           position = "dodge", stat = "summary", fun.y = "mean", show.legend = FALSE) + 
-  geom_bar(aes(x=helix, y=helix_fruit), position="dodge", stat="summary", show.legend=FALSE)+
-  ylim(0, 25) +
-  scale_fill_manual(values=c("chartreuse4", "pink1", "pink1", "pink1", "pink1", "pink1", "pink1")) +
-  geom_hline(aes(yintercept=bib[bib$HelixID=="BIB10041", "hs_total_fruits"], linetype = "Your intake"), color="red", size=1) + # add line for participant's intake
-  labs(title = "Fruit portions/week", x="", y="") + 
-  theme(panel.background=element_blank(),
-        legend.title = element_blank(),
-        legend.key = element_rect(fill = NA)) 
-ggsave("TEST_fruit.pdf", width=8, height=5, units=("in"), dpi=300)
 
