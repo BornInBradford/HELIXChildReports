@@ -4,6 +4,8 @@ source("R/config.R")
 library(readr)
 library(ggplot2)
 library(dplyr)
+library(cowplot)
+
 
 chart_labels_file <- "R/chart_labels.csv"
 chart_settings_file <- "R/chart_settings.csv"
@@ -51,31 +53,62 @@ marginal_means <- all_data_summary %>%
   mutate(country = "All")
 all_data_summary <- bind_rows(all_data_summary, marginal_means)
 
-# loop through charts and children
-for(c in 1:nrow(chart_settings)) {
-  for(h in 1:nrow(cohort_children)) {
+output_plot <- list()
 
+# loop through charts and children
+for(h in 1:nrow(cohort_children)) {
+  for(c in 1:nrow(chart_settings)) {
+    
     # make single plot
     g <- ggplot(all_data_summary) + 
       geom_bar(aes_string(x="country", y=chart_settings$var[c], fill="country"), 
                position = "dodge", stat = "summary", show.legend = FALSE) +
-      scale_fill_manual(values=c("chartreuse4", "pink1", "pink1", "pink1", "pink1", "pink1", "pink1")) +
+      scale_fill_manual(values=c("darkorange", "cyan3", "cyan3", "cyan3", "cyan3", "cyan3", "cyan3")) +
       scale_y_continuous(limits = c(chart_settings$y_lower[c], chart_settings$y_upper[c])) +
-      geom_hline(aes(yintercept=pull(all_data[all_data$HelixID == cohort_children$HelixID[h], chart_settings$var[c]]), linetype = chart_settings$linetype[c]), color="red", size=1) +
-      labs(title = chart_settings$title[c], x="", y="") + 
-      theme(panel.background=element_blank(),
-            legend.title = element_blank(),
-            legend.key = element_rect(fill = NA))
-    # output png
-    ggsave(filename = paste0(cfg_output_path, cohort_children$HelixID[h], "_", chart_settings$name[c], "_barplot.png"),
-           plot = g, 
-           device = "png",
-           width=8, 
-           height=5, 
-           units=("in"), 
-           dpi=300)
+      geom_hline(aes(yintercept=pull(all_data[all_data$HelixID == cohort_children$HelixID[h], chart_settings$var[c]])), color="red", size=1) +
+      labs(title = "", x="", y="") + 
+      theme(plot.margin = margin(t=chart_settings$top[c], r=chart_settings$right[c], b=chart_settings$bottom[c], chart_settings$left[c]),
+            panel.background = element_rect(fill = "transparent"),
+            plot.background = element_rect(fill = "transparent", color = NA), 
+            panel.grid.major = element_blank(), 
+            panel.grid.minor = element_blank(), 
+            legend.background = element_rect(fill = "transparent"), 
+            legend.box.background = element_rect(fill = "transparent"))
 
+    
+    output_plot[[chart_settings$name[c]]] <- g
+    
   }
+  
+  # output pngs
+  
+  for(o in which(!is.na(chart_settings$grid1))) {
+    
+    # do we need 1 on its own or 2 side by side?  
+    if(is.na(chart_settings$grid2[o])) {
+      
+      png_filename <- paste0(cfg_output_path, cohort_children$HelixID[h], "_", chart_settings$grid1[o], "_barplot.png")
+      g = output_plot[[chart_settings$grid1[o]]]
+      
+    } else {
+      
+      png_filename <- paste0(cfg_output_path, cohort_children$HelixID[h], "_", chart_settings$grid1[o], "_", chart_settings$grid2[o], "_barplot.png")
+      g <- plot_grid(output_plot[[chart_settings$grid1[o]]], output_plot[[chart_settings$grid2[o]]])
+      
+    }
+    
+    ggsave(filename = png_filename,
+           plot = g,
+           device = "png",
+           width=chart_settings$width[o],
+           height=chart_settings$height[o],
+           units=("mm"),
+           dpi=300,
+           bg = "transparent")
+    
+    
+  }
+  
 }
 
 
