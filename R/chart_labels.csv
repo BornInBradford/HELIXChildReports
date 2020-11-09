@@ -1,6 +1,6 @@
 var,lan,linetype,title
-hs_no2_yr_hcp2_h,en,Your exposure,Nitrogen dioxide (NO2) exposure
-hs_ndvi100_h,en,Your exposure,Amount of green space within 100m of your home
+no2,en,Your exposure,Nitrogen dioxide (NO2) exposure
+ndvi100,en,Your exposure,Amount of green space within 100m of your home
 hs_total_sweets,en,Your intake,Sweets/week
 hs_beverages,en,Your intake,Fizzy drinks/week
 hs_total_fruits,en,Your intake,Fruit portions/week
@@ -10,3 +10,5 @@ hs_mvpa_alt,en,Your level,Minutes/day of moderate-to-vigorous physical activity
 sed_hr,en,Your level,Hours/day of sedentary activity
 dif_hours_wd,en,Your level,Hours/day of sleep during weekdays
 dif_hours_we,en,Your level,Hours/day of sleep during weekends
+tv_vg_wkd,en,,
+tv_vg_wed,en,,
