@@ -76,11 +76,11 @@ for(h in 1:nrow(cohort_children)) {
   child_output_path <- file.path(cfg_output_path, paste0(cfg_cohort, "_", cohort_children$HelixID[h]))
   dir.create(child_output_path, showWarnings = FALSE)
   
+  message(paste0("Child #", h, ": ", cohort_children$HelixID[h]))
+  
   for(c in 1:nrow(chart_settings)) {
  
     hline <- pull(all_data[all_data$HelixID == cohort_children$HelixID[h], chart_settings$var[c]])
-    
-    message(paste0("Child #", h, ": ", cohort_children$HelixID[h]))
     
     g <- ggplot(all_data_summary) + 
       geom_bar(aes_string(x="country", y=chart_settings$var[c], fill="country"), 
