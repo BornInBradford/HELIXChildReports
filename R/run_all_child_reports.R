@@ -76,16 +76,18 @@ for(h in 1:nrow(cohort_children)) {
   child_output_path <- file.path(cfg_output_path, paste0(cfg_cohort, "_", cohort_children$HelixID[h]))
   dir.create(child_output_path, showWarnings = FALSE)
   
-  for(c in 1:(nrow(chart_settings)-1)) {
+  for(c in 1:nrow(chart_settings)) {
  
     hline <- pull(all_data[all_data$HelixID == cohort_children$HelixID[h], chart_settings$var[c]])
     
+    message(paste0("Child #", h, ": ", cohort_children$HelixID[h]))
+    
     g <- ggplot(all_data_summary) + 
       geom_bar(aes_string(x="country", y=chart_settings$var[c], fill="country"), 
-               position = "dodge", stat = "summary", show.legend = FALSE) +
+               position = "dodge", stat = "identity", show.legend = FALSE) +
       scale_fill_manual(values=c("cyan3", "cyan3", "cyan3", "cyan3", "cyan3", "darkorange")) +
       scale_y_continuous() +
-      geom_hline(aes(yintercept=hline), color="red", size=1) +
+      geom_hline(aes_string(yintercept=hline), color="red", size=1) +
       labs(title = "", x="", y="") + 
       theme(plot.margin = margin(t=chart_settings$top[c], r=chart_settings$right[c], b=chart_settings$bottom[c], chart_settings$left[c]),
             panel.background = element_rect(fill = "transparent"),
